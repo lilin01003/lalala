@@ -1,0 +1,61 @@
+function showMsg()
+        {
+                errState="$?"
+                local showType="$1"
+                local showContent="$2"
+                local isExit="$3"
+                #如果isExit为空，则默认出错时该退出
+                if [ "${isExit}" = "" ]; then
+                        isExit=1
+                fi
+                local isIP='echo ${mysqlHost} | grep -E "172|192|10" | wc -l'
+                if [ "${mysqlHost}" = "localhost" ]; then
+                        local showExtent="localhost.${siteId}"
+                elif [ "${isIP}" -eq "1" ]; then
+                        local showExtent="db1(${mysqlHost}).${siteId}"
+                else
+                        showExtent=''
+                fi
+                showType='echo ${showType} | tr 'A-Z' 'a-z''
+                case "${showType}" in
+                        errsysmsg)
+                                if [ "${errState}" -ne 0 ]; then
+                                        echo -e "\033[31;49;1m['date +%F' '%T'] ${showExtent} Error: ${showContent}\033[39;49;0m" | tee -a ${logFile}
+                                        echo -e "\033[31;49;1m['date +%F' '%T'] Call Relation: bash${pid}\033[39;49;0m" | tee -a ${logFile}
+                                        if [ "${isExit}" -eq 1 ]; then
+                                                exit 1
+                                        fi
+                                fi
+                        ;;
+                        errsys)
+                                if [ "$errState" -ne 0 ]; then
+                                        exit 1
+                                fi
+                        ;;
+                        errusermsg)
+                                echo -e "\033[31;49;1m['date +%F' '%T'] ${showExtent} Error: ${showContent}\033[39;49;0m"  | tee -a ${logFile}
+                                echo -e "\033[31;49;1m['date +%F' '%T'] Call Relation: bash${pid}\033[39;49;0m" | tee -a ${logFile}
+                                if [ "${isExit}" -eq 1 ]; then
+                                        exit 1
+                                fi
+                        ;;
+                        warning)
+                                echo -e "\033[33;49;1m['date +%F' '%T'] ${showExtent} Warnning: ${showContent}\033[39;49;0m"  | tee -a ${logFile}
+                                echo -e "\033[33;49;1m['date +%F' '%T'] Call Relation: bash${pid}\033[39;49;0m"  | tee -a ${logFile}
+                        ;;
+                        msg)
+                                echo "['date +%F' '%T'] ${showExtent} ${showContent}" | tee -a ${logFile}
+                        ;;
+                        msg2)
+                                echo -n "['date +%F' '%T'] ${showExtent} ${showContent}" | tee -a ${logFile}
+                        ;;
+                        ok)
+                                echo "OK" >> ${logFile}
+                                echo -e "\033[32;49;1mOK\033[39;49;0m" 
+                        ;;
+                        *)
+                                echo -e "\033[31;49;1m['date +%F' '%T'] Error: Call founction showMsg error\033[39;49;0m"  | tee -a ${logFile}
+                                exit 1
+                        ;;
+                esac
+        }
