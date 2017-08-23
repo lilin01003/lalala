@@ -1,0 +1,15 @@
+ #执行sql语句
+        # echo "select now()" | executeSql root 7roaddba
+        function executeSql()
+        {
+                local sql="$1"
+                if [ -z "$mysqlUser" -o "$mysqlUser" = "" -o -z "${mysqlPwd}" -o "${mysqlPwd}" = "" ]; then
+                        showMsg "errUserMsg" "mysql user or mysql password is not vaild."
+                fi
+                if [ "$sql" = "" ]
+                then
+                        showMsg "errUserMsg" "sql statement is null "
+                else
+                        echo -e "$sql" | mysql -h${mysqlHost} -u${mysqlUser} -p${mysqlPwd} -P${mysqlPort} $useDBName --default-character-set=utf8 -N 
+                fi
+        }
