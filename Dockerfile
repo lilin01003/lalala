@@ -26,3 +26,5 @@ RUN mkdir -p /etc/supervisor/conf.d
 ADD supervisord.conf  /etc/supervisor
 ADD nginx.conf  /etc/supervisor/conf.d
 CMD /usr/bin/supervisord "-c" "/etc/supervisor/supervisord.conf"
+
+test
